@@ -3,6 +3,8 @@ package com.brielmarca.desafio.transacao.servico;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.brielmarca.desafio.transacao.dominio.Transacao;
@@ -14,6 +16,8 @@ import com.brielmarca.desafio.transacao.repositorio.RepositorioTransacaoEmMemori
  */
 @Service
 public class ServicoTransacao {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServicoTransacao.class);
 
 	private final RepositorioTransacaoEmMemoria repositorio;
 	private final Clock relogio;
@@ -45,6 +49,8 @@ public class ServicoTransacao {
 		}
 
 		repositorio.salvar(transacao);
+		// O log registra o evento, mas omite valor e data para não expor o corpo recebido.
+		LOGGER.info("Transação recebida e armazenada com sucesso");
 	}
 
 	/**
@@ -54,6 +60,7 @@ public class ServicoTransacao {
 	 */
 	public void apagarTodas() {
 		repositorio.apagarTodas();
+		LOGGER.info("Todas as transações armazenadas foram removidas");
 	}
 
 	/**

@@ -5,6 +5,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.DoubleSummaryStatistics;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,8 @@ import com.brielmarca.desafio.transacao.repositorio.RepositorioTransacaoEmMemori
  */
 @Service
 public class ServicoEstatistica {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServicoEstatistica.class);
 
 	private final RepositorioTransacaoEmMemoria repositorio;
 	private final Clock relogio;
@@ -37,6 +41,9 @@ public class ServicoEstatistica {
 	 * @return quantidade, soma, média, mínimo e máximo; todos zerados quando a janela está vazia
 	 */
 	public RespostaEstatistica calcular() {
+		// nanoTime mede duração de forma monotônica, sem depender de ajustes no relógio do sistema.
+		long inicioDoCalculo = System.nanoTime();
+
 		// O mesmo instante de referência é usado nos dois limites para evitar variações durante o cálculo.
 		Instant instanteAtual = relogio.instant();
 		Instant limiteDaJanela = instanteAtual.minus(janela);
@@ -48,15 +55,32 @@ public class ServicoEstatistica {
 
 		// DoubleSummaryStatistics usa infinitos para mínimo e máximo vazios, por isso tratamos esse caso.
 		if (estatisticas.getCount() == 0) {
+			registrarTempoDoCalculo(inicioDoCalculo, 0);
 			return RespostaEstatistica.vazia();
 		}
 
-		return new RespostaEstatistica(
+		RespostaEstatistica resposta = new RespostaEstatistica(
 				estatisticas.getCount(),
 				estatisticas.getSum(),
 				estatisticas.getAverage(),
 				estatisticas.getMin(),
 				estatisticas.getMax());
+		registrarTempoDoCalculo(inicioDoCalculo, estatisticas.getCount());
+		return resposta;
+	}
+
+	/**
+	 * Registra uma medição simples do custo do cálculo sem incluir dados das transações.
+	 *
+	 * @param inicioDoCalculo valor de nanoTime capturado no começo da operação
+	 * @param quantidade quantidade de itens considerados
+	 */
+	private void registrarTempoDoCalculo(long inicioDoCalculo, long quantidade) {
+		long duracaoMicrossegundos = (System.nanoTime() - inicioDoCalculo) / 1_000;
+		LOGGER.info(
+				"Estatísticas calculadas: quantidade={}, duração={} microssegundos",
+				quantidade,
+				duracaoMicrossegundos);
 	}
 
 	/**
