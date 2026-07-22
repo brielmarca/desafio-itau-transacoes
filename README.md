@@ -9,7 +9,7 @@ remove transações em memória e calcula estatísticas das transações ocorrid
 - Spring Boot 4.1.0
 - Spring Web MVC
 - Maven Wrapper
-- JUnit 5, Spring Boot Test e MockMvc
+- JUnit Jupiter, Spring Boot Test e MockMvc
 - Spring Boot Actuator
 - Springdoc OpenAPI e Swagger UI
 - Docker
@@ -61,7 +61,7 @@ e um usuário sem privilégios administrativos.
 | `GET` | `/estatistica` | Resume as transações da janela atual | 200 |
 | `GET` | `/actuator/health` | Informa a saúde da aplicação | 200 |
 | `GET` | `/v3/api-docs` | Fornece a especificação OpenAPI em JSON | 200 |
-| `GET` | `/swagger-ui.html` | Abre a documentação interativa | 200/redirect |
+| `GET` | `/swagger-ui/index.html` | Abre a documentação interativa | 200 |
 
 ### Receber Transação
 
@@ -114,6 +114,14 @@ Resposta de exemplo:
 
 Quando não há transações na janela, todos os campos retornam zero. Uma transação exatamente no
 limite inferior da janela é incluída de forma consistente.
+
+## Demonstração Da API
+
+A documentação interativa pode ser acessada em:
+
+http://localhost:8080/swagger-ui/index.html
+
+![Documentação interativa da API no Swagger UI](docs/imagens/swagger-ui.png)
 
 ## Configuração Da Janela
 
@@ -187,7 +195,7 @@ src/main/java/com/brielmarca/desafio
 - Dockerfile multi-stage e `.dockerignore`
 - Healthcheck com Spring Boot Actuator
 - Documentação OpenAPI em `/v3/api-docs`
-- Swagger UI em `/swagger-ui.html`
+- Swagger UI em `/swagger-ui/index.html`
 - Logs de eventos sem registrar o corpo das requisições
 - Janela de estatísticas configurável
 - Medição em microssegundos do tempo gasto no cálculo
@@ -196,6 +204,7 @@ src/main/java/com/brielmarca/desafio
 ## Limitações Conhecidas
 
 - Os dados não sobrevivem a reinícios e não são compartilhados entre múltiplas instâncias.
+- Transações antigas permanecem na memória até um `DELETE`, embora sejam ignoradas nas estatísticas.
 - O uso de `Double` pode produzir pequenas diferenças binárias em operações decimais.
 - Não há autenticação, persistência ou paginação porque essas funcionalidades não fazem parte do
   contrato solicitado.

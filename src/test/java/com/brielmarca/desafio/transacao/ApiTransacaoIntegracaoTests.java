@@ -1,6 +1,7 @@
 package com.brielmarca.desafio.transacao;
 
 import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -149,7 +150,8 @@ class ApiTransacaoIntegracaoTests {
 				.andExpect(jsonPath("$.sum").value(0.0))
 				.andExpect(jsonPath("$.avg").value(0.0))
 				.andExpect(jsonPath("$.min").value(0.0))
-				.andExpect(jsonPath("$.max").value(0.0));
+				.andExpect(jsonPath("$.max").value(0.0))
+				.andExpect(jsonPath("$.*").value(hasSize(5)));
 	}
 
 	@Test
@@ -221,6 +223,8 @@ class ApiTransacaoIntegracaoTests {
 				.content(json))
 				.andExpect(status().isUnprocessableContent())
 				.andExpect(content().string(""));
+
+		org.assertj.core.api.Assertions.assertThat(repositorio.listarCopia()).isEmpty();
 	}
 
 	private Transacao transacao(double valor, long segundosAtras) {

@@ -53,6 +53,18 @@ class ServicoEstatisticaTests {
 		assertThat(resposta).isEqualTo(RespostaEstatistica.vazia());
 	}
 
+	@Test
+	void deveRespeitarJanelaConfigurada() {
+		repositorio.salvar(transacao(15, 90));
+		ServicoEstatistica servicoComJanelaMaior = new ServicoEstatistica(
+				repositorio, Clock.fixed(AGORA, ZoneOffset.UTC), 120);
+
+		RespostaEstatistica resposta = servicoComJanelaMaior.calcular();
+
+		assertThat(resposta.quantidade()).isEqualTo(1);
+		assertThat(resposta.soma()).isEqualTo(15.0);
+	}
+
 	private Transacao transacao(double valor, long segundosAtras) {
 		return new Transacao(valor, OffsetDateTime.ofInstant(
 				AGORA.minusSeconds(segundosAtras), ZoneOffset.UTC));
