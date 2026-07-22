@@ -35,4 +35,12 @@ public class RepositorioTransacaoEmMemoria {
 		// A cópia impede que outras camadas alterem acidentalmente o armazenamento interno.
 		return List.copyOf(transacoes);
 	}
+
+	/**
+	 * Remove todas as transações armazenadas, inclusive quando a coleção já está vazia.
+	 */
+	public void apagarTodas() {
+		// clear é uma operação suportada pela coleção concorrente e não expõe sua referência.
+		transacoes.clear();
+	}
 }

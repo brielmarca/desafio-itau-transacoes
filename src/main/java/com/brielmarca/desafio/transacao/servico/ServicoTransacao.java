@@ -48,6 +48,15 @@ public class ServicoTransacao {
 	}
 
 	/**
+	 * Solicita a remoção de todas as transações mantidas em memória.
+	 *
+	 * A operação não recebe dados, não retorna conteúdo e também funciona com o repositório vazio.
+	 */
+	public void apagarTodas() {
+		repositorio.apagarTodas();
+	}
+
+	/**
 	 * Confere os campos obrigatórios antes de acessar seus valores.
 	 *
 	 * @param transacao objeto recebido pelo controlador
